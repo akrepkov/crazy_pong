@@ -1,0 +1,183 @@
+/* === RESET & BASE STYLES === */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    width: clamp(300px, 100vw, 1500px);
+    background-color: #000;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* === HEADER === */
+  .header {
+    display: flex;
+    align-items: center;
+    height: 10dvh;
+    padding: 22px 16px;
+    background-color: inherit;
+  }
+  
+  .name {
+    font-size: clamp(16px, 6vw, 64px);
+    color: #e2e2e2;
+  }
+  
+  /* === NAVIGATION === */
+  nav {
+    padding: 10px 16px;
+    background-color: #111;
+    display: flex;
+    gap: 16px;
+  }
+  
+  nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px 16px;
+    background-color: #222;
+    border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  nav a:hover {
+    background-color: #444;
+    color: #ddd;
+  }
+  
+  nav a.active {
+    background-color: #666;
+    color: white;
+  }
+  
+  /* === PRACTICE VIEW === */
+  .tab-view {
+    display: none;
+    padding: 20px;
+    height: 80dvh;
+    background-color: #000;
+    color: #ccc;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .tab-view.active {
+    display: block;
+  }
+  
+  /* === INPUTS & BUTTONS === */
+  .tab-view input,
+  .tab-view button {
+    height: 40px;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px;
+    margin: 10px;
+  }
+  
+  .tab-view input {
+    background-color: #363636;
+    color: white;
+    border: 1px solid #000;
+    width: 20%;
+  }
+  
+  .tab-view button {
+    width: clamp(120px, 40%, 300px);
+    padding: 10px 50px;
+    margin: 5px 10px;
+    background-color: #221422;
+    border: 1px solid #000;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  /* === GAME STATUS === */
+  #gameStatusGrid .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 10dvh;
+  }
+  
+  #players,
+  #gameStatusFrontend {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+    margin: 8px;
+    font-size: clamp(16px, 2vw, 64px);
+    text-align: center;
+  }
+  
+  /* === PRACTICE CONTROLS === */
+  .game-options,
+  .stopBlock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .game-options label {
+    color: white;
+    font-size: 16px;
+  }
+  
+  #ballCount {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #222;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  /* === MODAL === */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: #252525;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 6px;
+    width: 500px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    line-height: 60px;
+  }
+  
+  .close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .close:hover {
+    color: #000;
+  }
+  

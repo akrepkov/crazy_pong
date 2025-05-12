@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Game</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="name">Pong Game</div>
+    </div>
+    <nav>
+        <a href="#practice">Practice</a>
+    </nav>
+    <div id="view-practice" class="tab-view" style="display:none">
+        <div class="game-options" id="options">
+            <label for="ballCount">Balls:</label>
+            <select id="ballCount">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="10">Go crazy</option>
+            </select>
+            <button id="startGame">Start Game</button>
+        </div>
+        <div class="stopBlock" id="stop" style="display: none">
+            <button id="stopGame">Stop Game</button>
+        </div>
+        <div id="gameStatusGrid">
+            <div id="players"></div>
+            <div id="gameStatusFrontend">0 - 0</div>
+        </div>
+        <canvas id="pong" width="800" height="600" style="border:1px solid #ffffff; margin-top: 20px;"></canvas>
+    </div>
+    <script type="module" src="../src/app.js">
+    </script>
+</body>
+
+</html>
