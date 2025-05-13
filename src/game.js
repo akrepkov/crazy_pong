@@ -1,7 +1,5 @@
 import { movePaddles } from './controls.js';
 
-
-
 export const canvas = document.getElementById('pong');
 export const context = canvas.getContext('2d');
 let balls = [];
@@ -28,8 +26,8 @@ let rightPlayerScore = 0;
 let maxScore = 3;
 let bombTimer = 0;
 let lastTime = performance.now();
-
-
+let collision = false;
+let explosion = null;
 export function resetGame() {
 	balls = [];
 	rgbColor = "white";
@@ -46,6 +44,7 @@ class Bomb {
 	constructor(dirX, dirY) {
 		this.x = canvas.width / 2;
 		this.y = canvas.height / 2;
+		this.size = 20;
 		this.speedX = dirX;
 		this.speedY = dirY;
 
@@ -54,7 +53,7 @@ class Bomb {
 		this.frameHeight = 20;  // height of one frame
 		this.totalFrames = 4;  // number of frames in your sprite sheet
 		this.currentFrame = 0;
-		this.frameDelay = 8; // lower = faster animation
+		this.frameDelay = 10; // lower = faster animation
 		this.frameCounter = 0;
 	}
 
@@ -128,6 +127,51 @@ function createBall(dirX, dirY, ballColor) {
 	balls.push(ball);
 }
 
+
+const explosionSprite = new Image();
+explosionSprite.src = './src/explosion.png';
+
+class Explosion {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+		this.size = 40;
+		this.finished = 0;
+
+		this.frameWidth = 40;
+		this.frameHeight = 40;
+		this.totalFrames = 5;
+		this.currentFrame = 0;
+		this.frameDelay = 10;
+		this.frameCounter = 0;
+	}
+
+	update() {
+		this.frameCounter++;
+		if (this.frameCounter >= this.frameDelay) {
+			this.currentFrame = (this.currentFrame + 1) % this.totalFrames;
+			this.frameCounter = 0;
+		}
+	}
+
+	draw() {
+		if (!explosionSprite.complete) return;
+		if (this.finished >= 100) {
+			console.log("COUNTER" , this.finished);
+			collision = false;
+			return;
+		}
+		this.finished++;
+		const sx = this.currentFrame * this.frameWidth;
+		context.drawImage(
+			explosionSprite,
+			sx, 0, this.frameWidth, this.frameHeight,
+			this.x, this.y, this.frameWidth, this.frameHeight
+		);
+	}
+}
+
+
 function checkBall(ball) {
 	// Top/bottom wall collision
 	if (ball.y <= 0 || ball.y + ball.size >= canvas.height) {
@@ -160,33 +204,40 @@ function checkBall(ball) {
 
 function checkBomb(bomb) {
 	// Wall collision (top/bottom)
-	if (bomb.y <= 0 || bomb.y + bomb.frameHeight >= canvas.height) {
+	if (bomb.y <= 0 || bomb.y + bomb.size >= canvas.height) {
 		bomb.speedY = -bomb.speedY;
 	}
 
-	// Left paddle collision → remove bomb
+	// Left paddle collision → remove bomb and score for the right player
 	if (bomb.x <= leftPaddle.x + leftPaddle.width &&
-		bomb.y + bomb.frameHeight >= leftPaddle.y &&
-		bomb.y <= leftPaddle.y + leftPaddle.height) {
+		bomb.y + bomb.size >= leftPaddle.y && bomb.y <= leftPaddle.y + leftPaddle.height) {
 		console.log("Bomb hit left paddle!");
-		rightPlayerScore++;
-		bomb = null;
-		return null;
+		collision = true;
+		explosion = new Explosion(bomb.x, bomb.y);
+		rightPlayerScore++;  // Right player scores when bomb hits left paddle
+		return null;  // Return null to remove the bomb
 	}
 
-	// Right paddle collision → remove bomb
-	if (bomb.x + bomb.frameWidth >= rightPaddle.x &&
+	// Right paddle collision → remove bomb and score for the left player
+	if (bomb.x + bomb.size >= rightPaddle.x &&
 		bomb.x <= rightPaddle.x + rightPaddle.width &&
-		bomb.y + bomb.frameHeight >= rightPaddle.y &&
+		bomb.y + bomb.size >= rightPaddle.y &&
 		bomb.y <= rightPaddle.y + rightPaddle.height) {
 		console.log("Bomb hit right paddle!");
-		leftPlayerScore++;
-		bomb = null;
-		return null;
+		collision = true;
+		explosion = new Explosion(bomb.x - 20, bomb.y);
+		leftPlayerScore++;  // Left player scores when bomb hits right paddle
+		return null;  // Return null to remove the bomb
 	}
 
+    if (bomb.x <= 0 || bomb.x + bomb.size >= canvas.width) {
+        return null;  // Return null to remove the bomb
+    }
+
+	// Otherwise, continue the bomb's movement and return it
 	return bomb;
 }
+
 
 function updateGameStatus() {
 	const gameStatus = document.getElementById('gameStatusFrontend');
@@ -200,7 +251,6 @@ function gameLoop(currentTime) {
 	movePaddles();
 	leftPaddle.drawPaddle();
 	rightPaddle.drawPaddle();
-	console.log (bombTimer);
 	if (bomb === null) {
 		bombTimer += deltaTime;
 		if (bombTimer >= 3000) {
@@ -216,6 +266,20 @@ function gameLoop(currentTime) {
 			bomb.draw();
 		}
 	}
+    if (collision === true && explosion != null ) {
+
+        console.log("IM DRAWING)", collision)
+        explosion.update();
+        explosion.draw();
+		console.log("MY COORDINATEAS ", explosion.x, explosion.y);
+		if (explosion.finished >= 100){
+			console.log("I am finished ", explosion.finished);
+			explosion = null;
+			collision = false;
+		}
+		
+    }
+
 
 	// Balls update
 	for (const ball of balls) {
@@ -230,6 +294,7 @@ function gameLoop(currentTime) {
 	if (leftPlayerScore >= maxScore || rightPlayerScore >= maxScore) {
 		winner = (leftPlayerScore >= maxScore) ? player1Name : player2Name;
 		document.getElementById("stopGame").click();
+		handleStopGame();
 		return;
 	}
 
